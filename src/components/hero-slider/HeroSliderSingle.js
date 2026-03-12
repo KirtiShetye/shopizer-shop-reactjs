@@ -20,12 +20,12 @@ const HeroSliderFifteenSingle = ({ data, sliderClass, strings, sliderText }) => 
                 dangerouslySetInnerHTML={{ __html: sliderText.description.description.replace(/>]]/g, "&gt;") }}
               />
               <div className="slider-btn btn-hover">
-                {/* <Link
+                <Link
                   className="animated rounden-btn"
-                  to={process.env.PUBLIC_URL + data.url}
+                  to="/category/1"
                 >
                   {strings["Shop Now"]}
-                </Link> */}
+                </Link>
               </div>
             </div>
           </div>

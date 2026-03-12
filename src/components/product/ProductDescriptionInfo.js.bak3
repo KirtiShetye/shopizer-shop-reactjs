@@ -168,37 +168,7 @@ const ProductDescriptionInfo = ({
           )}
       </div>
       
-      
-      {/* Wishlist Button - Prominent Position */}
-      <div className="pro-details-wishlist-wrap" style={{ marginTop: '15px', marginBottom: '20px' }}>
-        <button
-          onClick={handleWishlistClick}
-          disabled={wishlistLoading}
-          style={{
-            width: '100%',
-            padding: '12px 20px',
-            backgroundColor: inWishlist ? '#e74c3c' : '#fff',
-            color: inWishlist ? '#fff' : '#e74c3c',
-            border: '2px solid #e74c3c',
-            borderRadius: '4px',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: wishlistLoading ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            transition: 'all 0.3s ease',
-            opacity: wishlistLoading ? 0.6 : 1
-          }}
-        >
-          <i className={inWishlist ? 'fa fa-heart' : 'fa fa-heart-o'} style={{ fontSize: '18px' }}></i>
-          <span>{wishlistLoading ? 'Loading...' : (inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist')}</span>
-        </button>
-      </div>
-      
-      {/* Rating moved below wishlist */}
-      <div className="pro-details-rating-wrap" style={{ marginBottom: '15px' }}>
+      <div className="pro-details-rating-wrap">
         <div className="pro-details-rating">
           <StarRatings
             rating={product.rating}
@@ -208,6 +178,7 @@ const ProductDescriptionInfo = ({
             numberOfStars={5}
             name='view-rating'
           />
+          {/* <Rating ratingValue={product.rating} /> */}
         </div>
       </div>
       {/* ) : (

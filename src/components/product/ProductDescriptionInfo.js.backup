@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
 import React, { Fragment, useState, useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 // import { getProductCartQuantity } from "../../helpers/product";
 import { isValidObject } from "../../util/helper";
 import { addToCart } from "../../redux/actions/cartActions";
-import { addToWishlist as addToWishlistAction, removeFromWishlist } from "../../redux/actions/wishlistActions";
+// import { addToWishlist } from "../../redux/actions/wishlistActions";
 // import { addToCompare } from "../../redux/actions/compareActions";
 // import Rating from "./sub-components/ProductRating";
 import StarRatings from 'react-star-ratings';
@@ -19,12 +19,10 @@ const ProductDescriptionInfo = ({
   finalDiscountedPrice,
   finalProductPrice,
   cartItems,
-  wishlistItems,
+  // wishlistItem,
   // compareItem,
   addToast,
   addToCart,
-  addToWishlist,
-  removeFromWishlist,
   setLoader,
   productID,
   defaultStore,
@@ -38,47 +36,11 @@ const ProductDescriptionInfo = ({
   const [isDiscount, setIsDiscount] = useState(product.discounted)
   const [selectedProductColor, setSelectedProductColor] = useState([])
   const [quantityCount, setQuantityCount] = useState(1);
-  const history = useHistory();
-  const [inWishlist, setInWishlist] = useState(false);
-  const [wishlistLoading, setWishlistLoading] = useState(false);
   useEffect(() => {
     // console.log(strings);
     getDefualtsOption()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    // Check if product is in wishlist (backend returns productIds array)
-    if (wishlistItems && wishlistItems.length > 0) {
-      const isInWishlist = wishlistItems.includes(product.id);
-      setInWishlist(isInWishlist);
-    } else {
-      setInWishlist(false);
-    }
-  }, [wishlistItems, product.id]);
-
-  const handleWishlistClick = async () => {
-    if (!userData || !userData.id) {
-      addToast('Please login to add to wishlist', { appearance: 'error', autoDismiss: true });
-      history.push('/login-register');
-      return;
-    }
-
-    setWishlistLoading(true);
-    try {
-      if (inWishlist) {
-        await removeFromWishlist(userData.id, product.id);
-        addToast('Removed from wishlist', { appearance: 'success', autoDismiss: true });
-      } else {
-        await addToWishlist(userData.id, product.id);
-        addToast('Added to wishlist', { appearance: 'success', autoDismiss: true });
-      }
-    } catch (error) {
-      addToast('Failed to update wishlist', { appearance: 'error', autoDismiss: true });
-    } finally {
-      setWishlistLoading(false);
-    }
-  };
 
   const getDefualtsOption = async () => {
     let temp = [];
@@ -167,38 +129,8 @@ const ProductDescriptionInfo = ({
             <span>{productPrice} </span>
           )}
       </div>
-      
-      
-      {/* Wishlist Button - Prominent Position */}
-      <div className="pro-details-wishlist-wrap" style={{ marginTop: '15px', marginBottom: '20px' }}>
-        <button
-          onClick={handleWishlistClick}
-          disabled={wishlistLoading}
-          style={{
-            width: '100%',
-            padding: '12px 20px',
-            backgroundColor: inWishlist ? '#e74c3c' : '#fff',
-            color: inWishlist ? '#fff' : '#e74c3c',
-            border: '2px solid #e74c3c',
-            borderRadius: '4px',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: wishlistLoading ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            transition: 'all 0.3s ease',
-            opacity: wishlistLoading ? 0.6 : 1
-          }}
-        >
-          <i className={inWishlist ? 'fa fa-heart' : 'fa fa-heart-o'} style={{ fontSize: '18px' }}></i>
-          <span>{wishlistLoading ? 'Loading...' : (inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist')}</span>
-        </button>
-      </div>
-      
-      {/* Rating moved below wishlist */}
-      <div className="pro-details-rating-wrap" style={{ marginBottom: '15px' }}>
+      {/* {product.rating && product.rating > 0 ? ( */}
+      <div className="pro-details-rating-wrap">
         <div className="pro-details-rating">
           <StarRatings
             rating={product.rating}
@@ -208,6 +140,7 @@ const ProductDescriptionInfo = ({
             numberOfStars={5}
             name='view-rating'
           />
+          {/* <Rating ratingValue={product.rating} /> */}
         </div>
       </div>
       {/* ) : (
@@ -375,17 +308,18 @@ const ProductDescriptionInfo = ({
                 <button disabled>{strings["Out of Stock"]}</button>
               )}
           </div>
-          <div className="pro-details-wishlist">
+          {/* <div className="pro-details-wishlist">
             <button
-              onClick={handleWishlistClick}
-              disabled={wishlistLoading}
-              className={inWishlist ? "active" : ""}
-              title={inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+              className={wishlistItem !== undefined ? "active" : ""}
+              disabled={wishlistItem !== undefined}
+              title={
+                wishlistItem !== undefined
+                  ? "Added to wishlist"
+                  : "Add to wishlist"
+              }
+              onClick={() => addToWishlist(product, addToast)}
             >
-              <i className={inWishlist ? 'fa fa-heart' : 'fa fa-heart-o'} />
-            </button>
-          </div>
-          {/* OLD WISHLIST CODE - REPLACED
+              <i className="pe-7s-like" />
             </button>
           </div>
           <div className="pro-details-compare">
@@ -506,8 +440,7 @@ const mapStateToProps = (state, ownProps) => {
     productID: prodID,
     cartItems: state.cartData.cartItems,
     defaultStore: state.merchantData.defaultStore,
-    userData: state.userData.userData,
-    wishlistItems: state.wishlistData ? state.wishlistData.items : []
+    userData: state.userData.userData
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -538,12 +471,7 @@ const mapDispatchToProps = dispatch => {
         )
       );
     },
-    addToWishlist: (customerId, productId) => {
-      return dispatch(addToWishlistAction(customerId, productId));
-    },
-    removeFromWishlist: (customerId, productId) => {
-      return dispatch(removeFromWishlist(customerId, productId));
-    }
+    // addToWishlist: (item, addToast) => {
     //   dispatch(addToWishlist(item, addToast));
     // },
     // addToCompare: (item, addToast) => {

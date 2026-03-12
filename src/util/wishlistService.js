@@ -1,5 +1,4 @@
 import WebService from './webService';
-import constant from './constant';
 
 export default class WishlistService {
   

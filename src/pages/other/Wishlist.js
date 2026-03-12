@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from "react";
+import React, { useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { fetchWishlist, removeFromWishlist, clearWishlist } from "../../redux/actions/wishlistActions";

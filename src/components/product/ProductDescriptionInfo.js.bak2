@@ -168,37 +168,34 @@ const ProductDescriptionInfo = ({
           )}
       </div>
       
-      
-      {/* Wishlist Button - Prominent Position */}
-      <div className="pro-details-wishlist-wrap" style={{ marginTop: '15px', marginBottom: '20px' }}>
+      {/* Wishlist Button */}
+      <div className="pro-details-wishlist-btn" style={{ marginTop: '15px', marginBottom: '15px' }}>
         <button
-          onClick={handleWishlistClick}
-          disabled={wishlistLoading}
+          className="btn-wishlist"
           style={{
-            width: '100%',
-            padding: '12px 20px',
-            backgroundColor: inWishlist ? '#e74c3c' : '#fff',
-            color: inWishlist ? '#fff' : '#e74c3c',
-            border: '2px solid #e74c3c',
-            borderRadius: '4px',
-            fontSize: '16px',
-            fontWeight: '600',
+            padding: '12px 24px',
+            border: inWishlist ? 'none' : '2px solid #e74c3c',
+            backgroundColor: inWishlist ? '#e74c3c' : 'white',
+            color: inWishlist ? 'white' : '#e74c3c',
             cursor: wishlistLoading ? 'not-allowed' : 'pointer',
+            borderRadius: '4px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
+            gap: '8px',
+            fontSize: '14px',
+            fontWeight: '500',
             transition: 'all 0.3s ease',
             opacity: wishlistLoading ? 0.6 : 1
           }}
+          onClick={handleWishlistClick}
+          disabled={wishlistLoading}
         >
-          <i className={inWishlist ? 'fa fa-heart' : 'fa fa-heart-o'} style={{ fontSize: '18px' }}></i>
-          <span>{wishlistLoading ? 'Loading...' : (inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist')}</span>
+          <i className={inWishlist ? 'fa fa-heart' : 'fa fa-heart-o'} style={{ fontSize: '16px' }}></i>
+          {wishlistLoading ? 'Loading...' : (inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist')}
         </button>
       </div>
-      
-      {/* Rating moved below wishlist */}
-      <div className="pro-details-rating-wrap" style={{ marginBottom: '15px' }}>
+      {/* {product.rating && product.rating > 0 ? ( */}
+      <div className="pro-details-rating-wrap">
         <div className="pro-details-rating">
           <StarRatings
             rating={product.rating}
@@ -208,6 +205,7 @@ const ProductDescriptionInfo = ({
             numberOfStars={5}
             name='view-rating'
           />
+          {/* <Rating ratingValue={product.rating} /> */}
         </div>
       </div>
       {/* ) : (
@@ -375,17 +373,18 @@ const ProductDescriptionInfo = ({
                 <button disabled>{strings["Out of Stock"]}</button>
               )}
           </div>
-          <div className="pro-details-wishlist">
+          {/* <div className="pro-details-wishlist">
             <button
-              onClick={handleWishlistClick}
-              disabled={wishlistLoading}
-              className={inWishlist ? "active" : ""}
-              title={inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+              className={wishlistItem !== undefined ? "active" : ""}
+              disabled={wishlistItem !== undefined}
+              title={
+                wishlistItem !== undefined
+                  ? "Added to wishlist"
+                  : "Add to wishlist"
+              }
+              onClick={() => addToWishlist(product, addToast)}
             >
-              <i className={inWishlist ? 'fa fa-heart' : 'fa fa-heart-o'} />
-            </button>
-          </div>
-          {/* OLD WISHLIST CODE - REPLACED
+              <i className="pe-7s-like" />
             </button>
           </div>
           <div className="pro-details-compare">

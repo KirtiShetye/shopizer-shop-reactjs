@@ -76,16 +76,15 @@ export const getShippingState = (code) => {
 }
 export const getCurrentLocation = () => {
     return async dispatch => {
-        const location = window.navigator && window.navigator.geolocation
-        // console.log(location, 'getCurrentLocation')
-        if (location) {
-            location.getCurrentPosition((position) => {
-                // console.log(position)
-                dispatch(getCurrentAddress(position.coords.latitude, position.coords.longitude))
-            }, (error) => {
-                console.log(error)
-            })
-        }
+        // Geolocation disabled to prevent errors
+        // const location = window.navigator && window.navigator.geolocation
+        // if (location) {
+        //     location.getCurrentPosition((position) => {
+        //         dispatch(getCurrentAddress(position.coords.latitude, position.coords.longitude))
+        //     }, (error) => {
+        //         console.log(error)
+        //     })
+        // }
     }
 }
 export const getCurrentAddress = (lat, long) => {

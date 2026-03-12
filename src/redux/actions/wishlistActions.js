@@ -14,7 +14,12 @@ export const fetchWishlist = (customerId) => {
       const data = await WishlistService.getWishlist(customerId);
       dispatch({ type: FETCH_WISHLIST_SUCCESS, payload: data });
     } catch (error) {
-      dispatch({ type: FETCH_WISHLIST_FAILURE, payload: error.message });
+      // Handle 404 as empty wishlist
+      if (error.response && error.response.status === 404) {
+        dispatch({ type: FETCH_WISHLIST_SUCCESS, payload: { productIds: [], products: [] } });
+      } else {
+        dispatch({ type: FETCH_WISHLIST_FAILURE, payload: error.message });
+      }
     }
   };
 };
