@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { fetchWishlist } from "../../redux/actions/wishlistActions";
 import React, { useState, useEffect } from "react";
 import { Link, useRouteMatch, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
@@ -15,7 +16,7 @@ const IconGroup = ({
   // currency,
   cartData,
   cartCount,
-  // wishlistData,
+  wishlistData,
   // compareData,
   deleteFromCart,
   iconWhiteClass,
@@ -23,7 +24,8 @@ const IconGroup = ({
   setUser,
   deleteAllFromCart,
   strings,
-  getCart
+  getCart,
+  fetchWishlist
 }) => {
   const pathname = useRouteMatch();
   const history = useHistory();
@@ -48,7 +50,8 @@ const IconGroup = ({
     //   logout()
     // }
     if (userData) {
-      getProfile()
+      getProfile();
+      if (userData.id) fetchWishlist(userData.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps 
   }, [])
@@ -219,6 +222,12 @@ const IconGroup = ({
                   <Link to={"/recent-order"}>{strings["Recent Orders"]}</Link>
                 </li>
                 <li>
+                  <Link to={"/wishlist"}>
+                    <i className="fa fa-heart" style={{ marginRight: '5px' }}></i>
+                    {strings["Wishlist"] || "Wishlist"}
+                  </Link>
+                </li>
+                <li>
                   <Link to={"/login"} onClick={logout}>{strings["Logout"]}</Link>
                 </li>
               </div>
@@ -242,6 +251,19 @@ const IconGroup = ({
           </span>
         </Link>
       </div> */}
+      {/* Wishlist Icon */}
+      {userData && (
+        <div className="same-style wishlist-wrap">
+          <Link to="/wishlist">
+            <i className="pe-7s-like" />
+            {wishlistData && wishlistData.productIds && wishlistData.productIds.length > 0 && (
+              <span className="count-style">
+                {wishlistData.productIds.length}
+              </span>
+            )}
+          </Link>
+        </div>
+      )}
       {
         pathname.url !== '/checkout' &&
         <div className="same-style cart-wrap d-none d-lg-block">
@@ -289,7 +311,8 @@ const mapStateToProps = state => {
   return {
     cartData: state.cartData.cartItems,
     cartCount: state.cartData.cartCount,
-    userData: state.userData.userData
+    userData: state.userData.userData,
+    wishlistData: state.wishlistData
   };
 };
 
@@ -306,6 +329,9 @@ const mapDispatchToProps = dispatch => {
     },
     getCart: (cartID, userData) => {
       dispatch(getCart(cartID, userData));
+    },
+    fetchWishlist: (customerId) => {
+      dispatch(fetchWishlist(customerId));
     }
   };
 };

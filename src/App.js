@@ -38,6 +38,7 @@ const Cart = lazy(() => import("./pages/other/Cart"));
 const RecentOrder = lazy(() => import("./pages/other/RecentOrder"));
 const OrderDetails = lazy(() => import("./pages/other/OrderDetails"));
 const Checkout = lazy(() => import("./pages/other/Checkout"));
+const Wishlist = lazy(() => import("./pages/other/Wishlist"));
 
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 const OrderConfirm = lazy(() => import("./pages/other/OrderConfirm"));
@@ -151,6 +152,10 @@ const App = (props) => {
                 <Route
                   path="/cart"
                   component={Cart}
+                />
+                <Route
+                  path="/wishlist"
+                  component={Wishlist}
                 />
                 <Route
                   path="/recent-order"

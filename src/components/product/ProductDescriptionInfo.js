@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
 import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 // import { getProductCartQuantity } from "../../helpers/product";
 import { isValidObject } from "../../util/helper";
 import { addToCart } from "../../redux/actions/cartActions";
-// import { addToWishlist } from "../../redux/actions/wishlistActions";
+import { addToWishlist as addToWishlistAction, removeFromWishlist } from "../../redux/actions/wishlistActions";
 // import { addToCompare } from "../../redux/actions/compareActions";
 // import Rating from "./sub-components/ProductRating";
 import StarRatings from 'react-star-ratings';
@@ -19,10 +19,12 @@ const ProductDescriptionInfo = ({
   finalDiscountedPrice,
   finalProductPrice,
   cartItems,
-  // wishlistItem,
+  wishlistItems,
   // compareItem,
   addToast,
   addToCart,
+  addToWishlist,
+  removeFromWishlist,
   setLoader,
   productID,
   defaultStore,
@@ -36,11 +38,47 @@ const ProductDescriptionInfo = ({
   const [isDiscount, setIsDiscount] = useState(product.discounted)
   const [selectedProductColor, setSelectedProductColor] = useState([])
   const [quantityCount, setQuantityCount] = useState(1);
+  const history = useHistory();
+  const [inWishlist, setInWishlist] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
   useEffect(() => {
     // console.log(strings);
     getDefualtsOption()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // Check if product is in wishlist (backend returns productIds array)
+    if (wishlistItems && wishlistItems.length > 0) {
+      const isInWishlist = wishlistItems.includes(product.id);
+      setInWishlist(isInWishlist);
+    } else {
+      setInWishlist(false);
+    }
+  }, [wishlistItems, product.id]);
+
+  const handleWishlistClick = async () => {
+    if (!userData || !userData.id) {
+      addToast('Please login to add to wishlist', { appearance: 'error', autoDismiss: true });
+      history.push('/login-register');
+      return;
+    }
+
+    setWishlistLoading(true);
+    try {
+      if (inWishlist) {
+        await removeFromWishlist(userData.id, product.id);
+        addToast('Removed from wishlist', { appearance: 'success', autoDismiss: true });
+      } else {
+        await addToWishlist(userData.id, product.id);
+        addToast('Added to wishlist', { appearance: 'success', autoDismiss: true });
+      }
+    } catch (error) {
+      addToast('Failed to update wishlist', { appearance: 'error', autoDismiss: true });
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
 
   const getDefualtsOption = async () => {
     let temp = [];
@@ -128,6 +166,33 @@ const ProductDescriptionInfo = ({
         ) : (
             <span>{productPrice} </span>
           )}
+      </div>
+      
+      {/* Wishlist Button */}
+      <div className="pro-details-wishlist-btn" style={{ marginTop: '15px', marginBottom: '15px' }}>
+        <button
+          className="btn-wishlist"
+          style={{
+            padding: '12px 24px',
+            border: inWishlist ? 'none' : '2px solid #e74c3c',
+            backgroundColor: inWishlist ? '#e74c3c' : 'white',
+            color: inWishlist ? 'white' : '#e74c3c',
+            cursor: wishlistLoading ? 'not-allowed' : 'pointer',
+            borderRadius: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '14px',
+            fontWeight: '500',
+            transition: 'all 0.3s ease',
+            opacity: wishlistLoading ? 0.6 : 1
+          }}
+          onClick={handleWishlistClick}
+          disabled={wishlistLoading}
+        >
+          <i className={inWishlist ? 'fa fa-heart' : 'fa fa-heart-o'} style={{ fontSize: '16px' }}></i>
+          {wishlistLoading ? 'Loading...' : (inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist')}
+        </button>
       </div>
       {/* {product.rating && product.rating > 0 ? ( */}
       <div className="pro-details-rating-wrap">
@@ -440,7 +505,8 @@ const mapStateToProps = (state, ownProps) => {
     productID: prodID,
     cartItems: state.cartData.cartItems,
     defaultStore: state.merchantData.defaultStore,
-    userData: state.userData.userData
+    userData: state.userData.userData,
+    wishlistItems: state.wishlistData ? state.wishlistData.items : []
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -471,7 +537,12 @@ const mapDispatchToProps = dispatch => {
         )
       );
     },
-    // addToWishlist: (item, addToast) => {
+    addToWishlist: (customerId, productId) => {
+      return dispatch(addToWishlistAction(customerId, productId));
+    },
+    removeFromWishlist: (customerId, productId) => {
+      return dispatch(removeFromWishlist(customerId, productId));
+    }
     //   dispatch(addToWishlist(item, addToast));
     // },
     // addToCompare: (item, addToast) => {
