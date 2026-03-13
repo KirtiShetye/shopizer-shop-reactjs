@@ -53,10 +53,11 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        docker build -t ghcr.io/${{ github.repository_owner }}/shopizer-frontend:latest \
-                     -t ghcr.io/${{ github.repository_owner }}/shopizer-frontend:${{ github.sha }} .
-        docker push ghcr.io/${{ github.repository_owner }}/shopizer-frontend:latest
-        docker push ghcr.io/${{ github.repository_owner }}/shopizer-frontend:${{ github.sha }}
+        IMAGE_NAME=$(echo "ghcr.io/${{ github.repository_owner }}/shopizer-frontend" | tr '[:upper:]' '[:lower:]')
+        docker build -t ${IMAGE_NAME}:latest \
+                     -t ${IMAGE_NAME}:${{ github.sha }} .
+        docker push ${IMAGE_NAME}:latest
+        docker push ${IMAGE_NAME}:${{ github.sha }}
         
     - name: Build Summary
       if: always()
