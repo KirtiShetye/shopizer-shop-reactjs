@@ -16,7 +16,7 @@ import {
   addToCart,
   // decreaseQuantity,
   deleteFromCart,
-  // cartItemStock,
+  saveForLater,  // cartItemStock,
   // deleteAllFromCart
 } from "../../redux/actions/cartActions";
 import Layout from "../../layouts/Layout";
@@ -85,7 +85,9 @@ const Cart = ({
   merchant,
   isLoading,
   setLoader,
-  cartCount
+  cartCount,
+  saveForLater,
+  userData
   // deleteAllFromCart,
 
 }) => {
@@ -241,6 +243,7 @@ const Cart = ({
                             <th>{strings["Qty"]}</th>
                             <th>{strings["Subtotal"]}</th>
                             <th>{strings["Action"]}</th>
+                            {userData && userData.id && <th>Move to Wishlist</th>}
                           </tr>
                         </thead>
                         <tbody>
@@ -300,6 +303,17 @@ const Cart = ({
                                 <td className="product-remove">
                                   <button onClick={() => deleteFromCart(cartItems.code, cartItem, defaultStore, addToast)}> <i className="fa fa-times"></i> </button>
                                 </td>
+                                {userData && userData.id && (
+                                  <td className="product-wishlist" style={{ textAlign: 'center' }}>
+                                    <button 
+                                      onClick={() => saveForLater(cartItems.code, cartItem.id, userData.id, defaultStore, addToast)} 
+                                      style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '8px 15px', cursor: 'pointer', borderRadius: '4px', fontSize: '16px' }}
+                                      title="Move to Wishlist"
+                                    >
+                                      <i className="fa fa-heart"></i>
+                                    </button>
+                                  </td>
+                                )}
                               </tr>
                             );
                           })}
@@ -523,7 +537,8 @@ const mapStateToProps = state => {
     countryData: state.userData.country,
     stateData: state.userData.state,
     merchant: state.merchantData.merchant,
-    isLoading: state.loading.isLoading
+    isLoading: state.loading.isLoading,
+    userData: state.userData.userData
   };
 };
 
@@ -563,6 +578,9 @@ const mapDispatchToProps = dispatch => {
     // },
     deleteFromCart: (cartId, item, defaultStore, addToast) => {
       dispatch(deleteFromCart(cartId, item, defaultStore, addToast));
+    },
+    saveForLater: (cartCode, productId, customerId, defaultStore, addToast) => {
+      dispatch(saveForLater(cartCode, productId, customerId, defaultStore, addToast));
     },
     getState: (code) => {
       dispatch(getState(code));

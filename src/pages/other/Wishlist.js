@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
+import { useToasts } from "react-toast-notifications";
 import { fetchWishlist, removeFromWishlist, clearWishlist } from "../../redux/actions/wishlistActions";
 import { addToCart } from "../../redux/actions/cartActions";
 import { isValidObject } from "../../util/helper";
@@ -16,10 +17,10 @@ const Wishlist = ({
   removeFromWishlist,
   clearWishlist,
   addToCart,
-  addToast,
   strings
 }) => {
   const history = useHistory();
+  const { addToast } = useToasts();
 
   useEffect(() => {
     if (!userData || !userData.id) {
@@ -163,7 +164,7 @@ const Wishlist = ({
                       </p>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                         <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#e74c3c' }}>
-                          {product.productPrice || product.price || '$0.00'}
+                          {product.productPrice?.finalPrice || product.price?.finalPrice || product.finalPrice || '$0.00'}
                         </span>
                         {product.available ? (
                           <span style={{ color: '#27ae60', fontWeight: '500', fontSize: '14px' }}>In Stock</span>

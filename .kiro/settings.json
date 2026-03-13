@@ -1,0 +1,7 @@
+{
+  "project": {
+    "name": "shopizer-shop-reactjs",
+    "type": "react",
+    "description": "Shopizer e-commerce React frontend"
+  }
+}

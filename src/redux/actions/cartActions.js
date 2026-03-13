@@ -202,3 +202,30 @@ export const cartItemStock = (item, color, size) => {
       .size.filter(single => single.name === size)[0].stock;
   }
 };
+
+// save for later - move cart item to wishlist
+export const saveForLater = (cartCode, productId, customerId, defaultStore, addToast) => {
+  return async dispatch => {
+    dispatch(setLoader(true));
+    try {
+      let action = constant.ACTION.CART + cartCode + '/product/' + productId + '/save-for-later?customerId=' + customerId + '&store=' + window._env_.APP_MERCHANT;
+      let response = await WebService.post(action, {});
+      
+      if (response) {
+        if (addToast) {
+          addToast("Moved to wishlist", { appearance: "success", autoDismiss: true });
+        }
+        // Reload the page to refresh cart
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      }
+      dispatch(setLoader(false));
+    } catch (error) {
+      dispatch(setLoader(false));
+      if (addToast) {
+        addToast("Failed to move to wishlist", { appearance: "error", autoDismiss: true });
+      }
+    }
+  };
+};
