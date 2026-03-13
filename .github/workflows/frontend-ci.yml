@@ -38,7 +38,7 @@ jobs:
         cd ..
         
     - name: Upload Frontend Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: shopizer-frontend-${{ github.sha }}
         path: shopizer-frontend.tar.gz
